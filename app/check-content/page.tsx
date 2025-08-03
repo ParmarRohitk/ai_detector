@@ -8,11 +8,18 @@ import toast, { Toaster } from 'react-hot-toast';
 interface AnalysisResult {
   originalText: string;
   humanizedText: string;
+  humanizedChanges: Array<{
+    original: string;
+    replacement: string;
+    startIndex: number;
+    endIndex: number;
+  }>;
   aiScore: number;
   humanScore: number;
   confidence: number;
   suggestions: string[];
   isAIGenerated: boolean;
+  detectedAIModel: string;
 }
 
 export default function CheckContent() {
@@ -41,7 +48,8 @@ export default function CheckContent() {
       'text/plain': ['.txt'],
       'application/pdf': ['.pdf'],
       'application/msword': ['.doc'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'text/markdown': ['.md', '.mdx']
     },
     multiple: false
   });
@@ -96,6 +104,51 @@ export default function CheckContent() {
     toast.success('Copied to clipboard!');
   };
 
+  const renderHighlightedText = (text: string, changes: Array<{
+    original: string;
+    replacement: string;
+    startIndex: number;
+    endIndex: number;
+  }>) => {
+    if (changes.length === 0) {
+      return <span className="text-gray-700">{text}</span>;
+    }
+
+    const elements: React.JSX.Element[] = [];
+    let lastIndex = 0;
+
+    changes.forEach((change, index) => {
+      // Add text before the change
+      if (change.startIndex > lastIndex) {
+        elements.push(
+          <span key={`text-${index}`} className="text-gray-700">
+            {text.slice(lastIndex, change.startIndex)}
+          </span>
+        );
+      }
+
+      // Add the highlighted replacement
+      elements.push(
+        <span key={`change-${index}`} className="text-orange-600 font-medium bg-orange-100 px-1 rounded">
+          {change.replacement}
+        </span>
+      );
+
+      lastIndex = change.endIndex;
+    });
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      elements.push(
+        <span key="text-end" className="text-gray-700">
+          {text.slice(lastIndex)}
+        </span>
+      );
+    }
+
+    return <>{elements}</>;
+  };
+
   const downloadResult = () => {
     if (!result) return;
     
@@ -107,11 +160,17 @@ ${result.originalText}
 Humanized Text:
 ${result.humanizedText}
 
+Changes Made:
+${result.humanizedChanges.map(change => 
+  `- "${change.original}" → "${change.replacement}"`
+).join('\n')}
+
 Analysis Results:
 - AI Score: ${result.aiScore}%
 - Human Score: ${result.humanScore}%
 - Confidence: ${result.confidence}%
 - AI Generated: ${result.isAIGenerated ? 'Yes' : 'No'}
+- Detected AI Model: ${result.detectedAIModel}
 
 Suggestions:
 ${result.suggestions.map(s => `- ${s}`).join('\n')}
@@ -177,13 +236,13 @@ ${result.suggestions.map(s => `- ${s}`).join('\n')}
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Enter your text (40-2000 characters)
               </label>
-              <textarea
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="Paste your content here to analyze for AI detection and get humanized version..."
-                className="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                maxLength={2000}
-              />
+                             <textarea
+                 value={inputText}
+                 onChange={(e) => setInputText(e.target.value)}
+                 placeholder="Paste your content here to analyze for AI detection and get humanized version..."
+                 className="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-700 leading-relaxed"
+                 maxLength={2000}
+               />
               <div className="flex justify-between items-center mt-2">
                 <span className="text-sm text-gray-500">
                   {inputText.length}/2000 characters
@@ -226,9 +285,9 @@ ${result.suggestions.map(s => `- ${s}`).join('\n')}
                     <p className="text-lg font-medium text-gray-700 mb-2">
                       Drop your file here, or click to select
                     </p>
-                    <p className="text-sm text-gray-500">
-                      Supports .txt, .pdf, .doc, .docx files
-                    </p>
+                                         <p className="text-sm text-gray-500">
+                       Supports .txt, .pdf, .doc, .docx, .md, .mdx files
+                     </p>
                   </div>
                 )}
               </div>
@@ -306,7 +365,9 @@ ${result.suggestions.map(s => `- ${s}`).join('\n')}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Original Text</h3>
                 <div className="bg-gray-50 rounded-lg p-4 h-64 overflow-y-auto">
-                  <p className="text-gray-700 whitespace-pre-wrap">{result.originalText}</p>
+                  <div className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                    {result.originalText}
+                  </div>
                 </div>
                 <button
                   onClick={() => copyToClipboard(result.originalText)}
@@ -320,7 +381,9 @@ ${result.suggestions.map(s => `- ${s}`).join('\n')}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Humanized Text</h3>
                 <div className="bg-green-50 rounded-lg p-4 h-64 overflow-y-auto">
-                  <p className="text-gray-700 whitespace-pre-wrap">{result.humanizedText}</p>
+                  <div className="leading-relaxed">
+                    {renderHighlightedText(result.humanizedText, result.humanizedChanges)}
+                  </div>
                 </div>
                 <button
                   onClick={() => copyToClipboard(result.humanizedText)}
@@ -346,6 +409,23 @@ ${result.suggestions.map(s => `- ${s}`).join('\n')}
                 </ul>
               </div>
             </div>
+
+            {/* AI Model Detection */}
+            {result.isAIGenerated && (
+              <div className="mt-4 p-4 rounded-lg bg-blue-50 border border-blue-200">
+                <div className="flex items-center">
+                  <AlertCircle className="w-6 h-6 text-blue-500 mr-3" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      Detected AI Model: {result.detectedAIModel}
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      Based on writing patterns and language characteristics, this content appears to be generated by {result.detectedAIModel.toLowerCase()}.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Final Verdict */}
             <div className="mt-6 p-4 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200">
