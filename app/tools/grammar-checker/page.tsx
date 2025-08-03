@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { ArrowLeft, CheckCircle, AlertCircle, Copy, Download, Edit3 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface GrammarIssue {
@@ -13,7 +14,7 @@ interface GrammarIssue {
   endIndex: number;
 }
 
-export default function GrammarChecker() {
+function GrammarCheckerContent() {
   const searchParams = useSearchParams();
   const [text, setText] = useState('');
   const [issues, setIssues] = useState<GrammarIssue[]>([]);
@@ -36,23 +37,23 @@ export default function GrammarChecker() {
     setTimeout(() => {
       const mockIssues: GrammarIssue[] = [
         {
-          type: 'spelling',
+          type: 'spelling' as const,
           message: 'Possible spelling error',
           suggestion: 'grammar',
           startIndex: inputText.toLowerCase().indexOf('grammer'),
           endIndex: inputText.toLowerCase().indexOf('grammer') + 7
         },
         {
-          type: 'punctuation',
+          type: 'punctuation' as const,
           message: 'Missing comma',
-          suggestion: 'Add comma after "however"',
+          suggestion: 'Add comma after &quot;however&quot;',
           startIndex: inputText.toLowerCase().indexOf('however'),
           endIndex: inputText.toLowerCase().indexOf('however') + 8
         },
         {
-          type: 'grammar',
+          type: 'grammar' as const,
           message: 'Subject-verb agreement',
-          suggestion: 'Change "is" to "are"',
+          suggestion: 'Change &quot;is&quot; to &quot;are&quot;',
           startIndex: inputText.toLowerCase().indexOf('the tools is'),
           endIndex: inputText.toLowerCase().indexOf('the tools is') + 12
         }
@@ -148,7 +149,7 @@ Total Issues: ${issues.length}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-3">
-              <a href="/" className="flex items-center space-x-3">
+              <Link href="/" className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
                   <Edit3 className="w-6 h-6 text-white" />
                 </div>
@@ -156,13 +157,13 @@ Total Issues: ${issues.length}
                   <h1 className="text-2xl font-bold text-gray-900">Grammar Checker</h1>
                   <p className="text-sm text-gray-600">Professional Grammar Analysis</p>
                 </div>
-              </a>
+              </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <a href="/" className="flex items-center text-gray-600 hover:text-blue-600 transition-colors">
+              <Link href="/" className="flex items-center text-gray-600 hover:text-blue-600 transition-colors">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Home
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -284,12 +285,20 @@ Total Issues: ${issues.length}
             ) : (
               <div className="text-center py-8 text-gray-500">
                 <Edit3 className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>Enter text and click "Check Grammar" to analyze</p>
+                <p>Enter text and click &quot;Check Grammar&quot; to analyze</p>
               </div>
             )}
           </div>
         </div>
       </main>
     </div>
+  );
+}
+
+export default function GrammarChecker() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <GrammarCheckerContent />
+    </Suspense>
   );
 } 

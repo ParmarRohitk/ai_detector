@@ -24,7 +24,7 @@ export default function Contact() {
           Contact Us
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Have questions or need help? We're here to assist you with any inquiries about TextTools Pro.
+          Have questions or need help? We&apos;re here to assist you with any inquiries about TextTools Pro.
         </p>
       </div>
 

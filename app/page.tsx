@@ -1,14 +1,7 @@
 'use client';
 
-import Image from "next/image";
 import { useState } from "react";
 import { 
-  FileText, 
-  Upload, 
-  CheckCircle, 
-  AlertCircle, 
-  Copy, 
-  Download,
   Search,
   Edit3,
   Zap,
@@ -339,7 +332,7 @@ export default function Home() {
               </div>
               <h4 className="text-xl font-semibold text-gray-900 mb-3">Privacy First</h4>
               <p className="text-gray-600">
-                Your data stays private. We don't store your text content - all processing happens locally in your browser for maximum security.
+                Your data stays private. We don&apos;t store your text content - all processing happens locally in your browser for maximum security.
               </p>
             </div>
             

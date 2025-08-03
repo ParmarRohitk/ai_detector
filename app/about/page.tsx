@@ -35,7 +35,7 @@ export default function About() {
           At TextTools Pro, we believe that great content starts with great tools. Our mission is to provide professional-grade text processing utilities that help creators, writers, and developers work more efficiently and produce higher quality content.
         </p>
         <p className="text-lg text-gray-700">
-          We're committed to privacy, performance, and precision - ensuring that your text processing needs are met with the highest standards of quality and security.
+          We&apos;re committed to privacy, performance, and precision - ensuring that your text processing needs are met with the highest standards of quality and security.
         </p>
       </div>
 
@@ -136,7 +136,7 @@ export default function About() {
       <div className="text-center bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white">
         <h3 className="text-3xl font-bold mb-4">Get in Touch</h3>
         <p className="text-xl mb-6 opacity-90">
-          Have questions or suggestions? We'd love to hear from you.
+          Have questions or suggestions? We&apos;d love to hear from you.
         </p>
         <a
           href="/contact"

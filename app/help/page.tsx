@@ -97,7 +97,7 @@ export default function Help() {
             <h2 className="text-2xl font-bold text-gray-900">Search for Help</h2>
           </div>
           <p className="text-gray-600 mb-6">
-            Can't find what you're looking for? Search our help articles and tutorials.
+            Can&apos;t find what you&apos;re looking for? Search our help articles and tutorials.
           </p>
           <div className="relative">
             <input
@@ -159,7 +159,7 @@ export default function Help() {
         <Users className="w-12 h-12 mx-auto mb-4" />
         <h3 className="text-3xl font-bold mb-4">Still Need Help?</h3>
         <p className="text-xl mb-6 opacity-90">
-          Can't find the answer you're looking for? Our support team is here to help.
+          Can&apos;t find the answer you&apos;re looking for? Our support team is here to help.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a

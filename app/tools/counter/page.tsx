@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { ArrowLeft, Copy, Download, Hash } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 
-export default function CharacterCounter() {
+function CharacterCounterContent() {
   const searchParams = useSearchParams();
   const [text, setText] = useState('');
 
@@ -115,7 +116,7 @@ Statistics:
 - Speaking time: ${stats.speakingTime} minutes
 
 Most Common Words:
-${stats.wordFrequency.map(item => `- "${item.word}": ${item.count} times`).join('\n')}
+${stats.wordFrequency.map(item => `- &quot;${item.word}&quot;: ${item.count} times`).join('\n')}
 
 Average word length: ${stats.words > 0 ? Math.round(stats.charactersNoSpaces / stats.words) : 0} characters
 Average sentence length: ${stats.sentences > 0 ? Math.round(stats.words / stats.sentences) : 0} words
@@ -163,7 +164,7 @@ Average sentence length: ${stats.sentences > 0 ? Math.round(stats.words / stats.
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-3">
-              <a href="/" className="flex items-center space-x-3">
+              <Link href="/" className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
                   <Hash className="w-6 h-6 text-white" />
                 </div>
@@ -171,13 +172,13 @@ Average sentence length: ${stats.sentences > 0 ? Math.round(stats.words / stats.
                   <h1 className="text-2xl font-bold text-gray-900">Character Counter</h1>
                   <p className="text-sm text-gray-600">Comprehensive text analysis</p>
                 </div>
-              </a>
+              </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <a href="/" className="flex items-center text-gray-600 hover:text-blue-600 transition-colors">
+              <Link href="/" className="flex items-center text-gray-600 hover:text-blue-600 transition-colors">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Home
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -276,7 +277,7 @@ Average sentence length: ${stats.sentences > 0 ? Math.round(stats.words / stats.
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         {stats.wordFrequency.map((item, index) => (
                           <div key={index} className="flex justify-between items-center p-2 bg-white rounded border">
-                            <span className="font-medium text-gray-700">"{item.word}"</span>
+                            <span className="font-medium text-gray-700">&quot;{item.word}&quot;</span>
                             <span className="text-sm text-gray-500">{item.count} times</span>
                           </div>
                         ))}
@@ -306,5 +307,13 @@ Average sentence length: ${stats.sentences > 0 ? Math.round(stats.words / stats.
         </div>
       </main>
     </div>
+  );
+}
+
+export default function CharacterCounter() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CharacterCounterContent />
+    </Suspense>
   );
 } 

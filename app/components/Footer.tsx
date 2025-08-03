@@ -1,7 +1,6 @@
 'use client';
 
-import { FileText, Shield, FileText as FileTextIcon, Settings, Heart, ExternalLink } from 'lucide-react';
-import Link from 'next/link';
+import { FileText, Shield, FileText as FileTextIcon, Settings, ExternalLink } from 'lucide-react';
 
 export default function Footer() {
   return (
